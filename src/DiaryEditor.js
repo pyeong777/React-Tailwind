@@ -1,6 +1,10 @@
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const DiaryEditor = () => {
+
+    const authorInput = useRef();
+    const contentInput = useRef();
+    
     const[state, setState] = useState({
         author: "",
         content: "",
@@ -15,8 +19,18 @@ const DiaryEditor = () => {
     };
 
     const handleSubmit = (e) => {
-        console.log(state);
-        alert("저장 성공")
+        if(state.author.length < 1) {
+            authorInput.current.focus();    
+            return;
+        }
+        
+        if(state.content.length < 5) {
+            contentInput.current.focus();
+            return;
+        }
+        alert("저장 성공");
+        
+        
     }
 
     return (
@@ -24,6 +38,7 @@ const DiaryEditor = () => {
             <h2 className="p-20 text-20">diary test</h2>
                 <div>
                     <input
+                    ref={authorInput}
                     className="p-10 mb-20 outline-gray-300 outline-1 outline w-500 focus:outline-yellow-500"
                     name="author"
                     value={state.author} 
@@ -32,6 +47,7 @@ const DiaryEditor = () => {
             </div>
         <div className="">
             <textarea 
+                ref={contentInput}
                 className="p-10 mb-20 outline-gray-300 h-150 outline-1 outline w-500 focus:outline-yellow-500"
                 name="content"
                 value={state.content} 
