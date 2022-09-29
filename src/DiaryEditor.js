@@ -34,8 +34,8 @@ const DiaryEditor = () => {
     }
 
     return (
-        <div className="p-10 text-center outline-gray-300 outline-1 outline">
-            <h2 className="p-20 text-20">diary test</h2>
+        <div className="p-10 text-center border-gray-500 border-1">
+            <h2 className="p-20 font-bold text-20">diary test</h2>
                 <div>
                     <input
                     ref={authorInput}
