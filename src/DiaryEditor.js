@@ -40,7 +40,7 @@ const DiaryEditor = ({onCreate}) => {
     }
 
     return (
-        <div className="p-10 text-center border-gray-500 border-1">
+        <div className="p-10 text-center outline-gray-500 outline outline-1">
             <h2 className="p-20 font-bold text-20">diary test</h2>
                 <div>
                     <input
