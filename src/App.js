@@ -3,39 +3,37 @@ import DiaryEditor from './DiaryEditor'
 import DiaryList from './DiaryList';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
+import { useState } from 'react';
+import { useRef } from 'react';
 dayjs.locale('ko');
 
-const nowDate = dayjs().format('YYYY-MM-DD ddd HH:mm:ss');
-
-const dummyList = [
-  {
-    id: 1,
-    author: "id1",
-    content: "hihihi",
-    emotion: 3,
-    created_date: nowDate
-  },
-  {
-    id: 2,
-    author: "id2",
-    content: "hihihi",
-    emotion: 5,
-    created_date: nowDate
-   },
-   {
-    id: 3,
-    author: "id3",
-    content: "hihihi",
-    emotion: 1,
-    created_date: nowDate
-   }
-]
-
 function App() {
+const [data, setData] = useState([]);
+
+const dataId = useRef(0);
+
+const onCreate = (author, content, emotion) => {
+  const nowDate = dayjs().format('YYYY-MM-DD ddd HH:mm:ss');
+  const newItem = {
+    author,
+    content,
+    emotion,
+    nowDate,
+    id : dataId.current,
+  };
+  dataId.current += 1;
+  setData([newItem, ...data])
+};
+
+const onDelete = (targetId) => {
+  const newDiaryList = data.filter((item) => item.id !== targetId);
+  setData(newDiaryList);
+};
+
  return (
     <div className='App'>
-      <DiaryEditor />
-      <DiaryList diaryList={dummyList}/>
+      <DiaryEditor onCreate={onCreate}/>
+      <DiaryList onDelete={onDelete} diaryList={data}/>
  </div>
  );
 }
