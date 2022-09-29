@@ -1,9 +1,9 @@
-const DiaryItem = ({onRemove, author, content, created_date, emotion, id}) => {
+const DiaryItem = ({onRemove, author, content, nowDate, emotion, id}) => {
     return (
         <div className="p-20 mb-10 bg-gray-100">        
             <div className="pb-10 mb-10 border-gray-500 border-b-1">
                 <p>작성자 : {author} | 감정점수 : {emotion}</p>
-                <p className="text-gray-500">{created_date}</p>
+                <p className="text-gray-500">{nowDate}</p>
             </div>
             <div className="font-bold">
                 <p>{content}</p>
