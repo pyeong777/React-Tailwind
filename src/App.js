@@ -3,11 +3,31 @@ import DiaryEditor from './DiaryEditor'
 import DiaryList from './DiaryList';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
-import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import { useRef, useMemo, useEffect, useCallback, useReducer } from 'react';
 dayjs.locale('ko');
 
+const reducer = (state, action) => {
+    switch(action.type) {
+      case 'INIT': {
+        return action.data;
+      }
+      case 'CREATE': {
+        return [action.data, ...state];
+      }
+      case 'REMOVE': {
+        return state.filter((it) => it.id !== action.targetId);
+      }
+      case 'EDIT': {
+        return state.map((it) => it.id === action.targetId? {...it, content:action.newContent} : it);
+      } 
+      default :
+      return state;
+    }
+};
+
 function App() {
-const [data, setData] = useState([]);
+
+const [data, dispatch] = useReducer(reducer, []);
 
 const dataId = useRef(0);
 
@@ -26,8 +46,7 @@ const getData = async() => {
       id: dataId.current++
     }
   })
-
-  setData(initData);
+  dispatch({type: 'INIT', data: initData})
 };
 
 useEffect(() => {
@@ -35,23 +54,16 @@ useEffect(() => {
 }, []); 
 
 const onCreate = useCallback((author, content, emotion) => {
-  const newItem = {
-    author,
-    content,
-    emotion,
-    nowDate,
-    id : dataId.current,
-  };
+  dispatch({type: 'CREATE', data: {author, content, emotion, nowDate, id:dataId.current}})
   dataId.current += 1;
-  setData((data) => [newItem, ...data])
 },[]);
 
 const onRemove = useCallback((targetId) => {
-  setData((data) => data.filter((item) => item.id !== targetId));
+  dispatch({type: 'REMOVE', targetId});
 },[]);
 
 const onEdit = useCallback((targetId, newContent) => {
-  setData((data) => data.map((it) => it.id === targetId ? {...it, content:newContent} : it))
+  dispatch({type: 'EDIT', targetId, newContent});
 },[]);
 
 const getDiaryAnalysis = useMemo(() => {
