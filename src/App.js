@@ -3,7 +3,7 @@ import DiaryEditor from './DiaryEditor'
 import DiaryList from './DiaryList';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
-import { useRef, useMemo, useEffect, useCallback, useReducer } from 'react';
+import React, { useRef, useMemo, useEffect, useCallback, useReducer } from 'react';
 dayjs.locale('ko');
 
 const reducer = (state, action) => {
@@ -25,7 +25,12 @@ const reducer = (state, action) => {
     }
 };
 
-function App() {
+export const DiaryStateContext = React.createContext(); 
+//data만 내려줌 
+export const DiaryDispatchContext = React.createContext(); 
+//oncreate onremove onedit props를 data와 같이내려주면 data state가 바뀔때마다 리렌더링이 되어서 최적화가 쓸모가없어지게됨
+
+const App = () => {
 
 const [data, dispatch] = useReducer(reducer, []);
 
@@ -66,6 +71,11 @@ const onEdit = useCallback((targetId, newContent) => {
   dispatch({type: 'EDIT', targetId, newContent});
 },[]);
 
+const memoizedDispatches = useMemo(() => {
+  return {onCreate, onRemove, onEdit};
+}, []);
+
+
 const getDiaryAnalysis = useMemo(() => {
   const goodCount = data.filter((it) => it.emotion >=3).length;
   const badCount = data.length-goodCount;
@@ -77,15 +87,20 @@ const getDiaryAnalysis = useMemo(() => {
 const {goodCount, badCount, goodRatio} = getDiaryAnalysis;
 
  return (
-    <div className='App'>
-      <DiaryEditor onCreate={onCreate}/>
-      <div>전체 일기 : {data.length}</div>
-      <div>기분 좋은 일기 개수 : {goodCount}</div>
-      <div>기분 나쁜 일기 개수 : {badCount}</div>
-      <div>기분 좋은 일기 비율 : {goodRatio}</div>
-      <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data}/>
- </div>
+  <DiaryStateContext.Provider value={data}>
+    <DiaryDispatchContext.Provider value={memoizedDispatches}>
+      <div className='App'>
+        <DiaryEditor />
+        <div>전체 일기 : {data.length}</div>
+        <div>기분 좋은 일기 개수 : {goodCount}</div>
+        <div>기분 나쁜 일기 개수 : {badCount}</div>
+        <div>기분 좋은 일기 비율 : {goodRatio}</div>
+        <DiaryList />
+      </div>
+    </DiaryDispatchContext.Provider>
+ </DiaryStateContext.Provider>
  );
 }
 
 export default App;
+
